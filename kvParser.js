@@ -9,6 +9,20 @@
 		return this;
 	};
 
+	KV.prototype.get = function(key, caseSensitive) {
+		if(arguments.length === 0) return this.value;
+
+		var i = this.value.length;
+		key = caseSensitive === false ? key.toUpperCase() : key;
+
+		while (i--) {
+			if (this.value[i].key === key || (caseSensitive === false && this.value[i].key.toUpperCase() === key)) {
+				return this.value[i].value;
+			}
+		}
+		return null;
+	};
+
 	KV.inArray = function(value, array) {
 		var i = array.length;
 		while (i--) {
