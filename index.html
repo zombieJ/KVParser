@@ -18,7 +18,7 @@
 
 "Nice Try"
 {
-	"Version"		"is \"SHOW\" time!"
+	"Version"		"is \"SHOW\" time!\nLet's rock!"
 
 	// test sound mapping
 	"TestSound"
@@ -32,7 +32,8 @@
 
 		<script>
 			var _text = document.getElementsByTagName("pre")[1].innerHTML;
-			console.log(KV.parse(_text, 0));
+			var _kv = KV.parse(_text, 0);
+			console.log(_kv);
 		</script>
 	</body>
 </html>

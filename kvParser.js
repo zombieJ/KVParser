@@ -22,6 +22,46 @@
 		}
 		return null;
 	};
+	
+	KV.prototype.toString = function(_data, _lvl) {
+		var _data = _data || "";
+		var _lvl = _lvl || 0;
+
+		var _write = function(text) {
+			var _des = _lvl;
+			while(_des) {
+				_data += "	";
+				_des -= 1;
+			}
+
+			_data += text + "\n";
+		};
+
+		// Comment
+		if(this.comment) {
+			this.comment.split("\n").forEach(function(line) {
+				_write("// " + line);
+			});
+		}
+
+		// Key - Value
+		if(typeof this.value === "string") {
+			_write('"' + this.key + '"	"'
+			+ this.value.replace(/\"/g, "\\\"").replace(/\'/g, "\\\'").replace(/\r\n/g, "\\n").replace(/\n/g, "\\n").replace(/\r/g, "\\n")
+			+ '"');
+		} else if(this.value.length === 0) {
+			_write('"' + this.key + '"	{}');
+		} else {
+			_write('"' + this.key + '"');
+			_write('{');
+			this.value.forEach(function(subKV) {
+				_data = subKV.toString(_data, _lvl + 1);
+			});
+			_write('}');
+		}
+
+		return _data.replace(/\n$/, "");
+	};
 
 	KV.inArray = function(value, array) {
 		var i = array.length;
