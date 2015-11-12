@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<script src="kvParser.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+	<body>
+		<pre>
+			// KV Only
+			"asd" // Test
+			
+			// AND
+			
+			"dsa"	// Value
+		</pre>
+		<pre>
+// Test
+// Nothing comment
+
+"Nice Try"
+{
+	"Version"		"is \"SHOW\" time!"
+
+	// test sound mapping
+	"TestSound"
+	{
+		// Common
+		"BaseClass"					"ability_datadriven"
+		"Noop" {}
+	}
+}
+		</pre>
+
+		<script>
+			var _text = document.getElementsByTagName("pre")[1].innerHTML;
+			console.log(KV.parse(_text, 0));
+		</script>
+	</body>
+</html>
