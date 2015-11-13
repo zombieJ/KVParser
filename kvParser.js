@@ -200,13 +200,19 @@
 				break;
 
 			case STATE_VALUE_LIST:
-				_subKV = KV.parse(text, _i + 1);
-				if(_subKV.kv) {
-					_value.push(_subKV.kv);
-				} else {
+				if(_c === "}") {
 					_setState(STATE_VALUE_END);
+					_endLoc = _i;
+				} else {
+					_subKV = KV.parse(text, _i + 1);
+					if (_subKV.kv) {
+						_value.push(_subKV.kv);
+					} else {
+						_setState(STATE_VALUE_END);
+						_endLoc = _subKV.endLoc;
+					}
+					_i = _subKV.endLoc;
 				}
-				_i = _subKV.endLoc;
 				break;
 
 			case STATE_VALUE_END:
