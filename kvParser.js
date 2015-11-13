@@ -9,18 +9,27 @@
 		return this;
 	};
 
-	KV.prototype.get = function(key, caseSensitive) {
-		if(arguments.length === 0) return this.value;
-
+	KV.prototype.getKV = function(key, caseSensitive) {
 		var i = this.value.length;
 		key = caseSensitive === false ? key.toUpperCase() : key;
 
 		while (i--) {
 			if (this.value[i].key === key || (caseSensitive === false && this.value[i].key.toUpperCase() === key)) {
-				return this.value[i].value;
+				return this.value[i];
 			}
 		}
 		return null;
+	};
+
+	KV.prototype.get = function(key, caseSensitive) {
+		if(arguments.length === 0) return this.value;
+
+		var _kv = this.getKV.apply(this, arguments);
+		if(_kv) {
+			return _kv.value;
+		} else {
+			return null;
+		}
 	};
 	
 	KV.prototype.toString = function(_data, _lvl) {
