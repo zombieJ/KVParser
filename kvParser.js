@@ -5,6 +5,7 @@
 		this.key = key || "";
 		this.value = value || "";
 		this.comment = comment || "";
+		this.keep = false;
 
 		return this;
 	};
@@ -31,8 +32,56 @@
 			return null;
 		}
 	};
-	
-	KV.prototype.toString = function(_data, _lvl) {
+
+	KV.prototype.isList = function() {
+		return (typeof this.value) !== "string";
+	};
+
+	KV.prototype.set = function(key, value) {
+		var _kv = this.getKV(key, false);
+		if(_kv) {
+			_kv.value = value;
+		} else {
+			_kv = new KV(key, value);
+			this.value.push(_kv);
+		}
+		return this;
+	};
+
+	KV.prototype.delete = function(key, caseSensitive) {
+		var _key = key.toUpperCase();
+		for(var i = 0 ; i < this.value.length ; i += 1) {
+			if(this.value[i].key === key || (caseSensitive && this.value[i].key.toUpperCase() === _key)) {
+				this.value.splice(i, 1);
+				i -= 1;
+			}
+		}
+	};
+
+	KV.prototype.clone = function(keepEmpty) {
+		return KV.parse(this.toString(keepEmpty !== false));
+	};
+
+	/*
+	 * saveFunc:Function
+	 * keepEmpty:boolean
+	 */
+	KV.prototype.toString = function(saveFunc) {
+		var _func;
+		if(saveFunc === false) {
+			_func = function(kv) {
+				if(kv.value === "") return false;
+			};
+		} else if(typeof saveFunc === "function") {
+			_func = saveFunc;
+		} else {
+			_func = null;
+		}
+
+		return this._toString(null, null, _func);
+	};
+
+	KV.prototype._toString = function(_data, _lvl, saveFunc) {
 		var _data = _data || "";
 		var _lvl = _lvl || 0;
 
@@ -64,7 +113,9 @@
 			_write('"' + this.key + '"');
 			_write('{');
 			this.value.forEach(function(subKV) {
-				_data = subKV.toString(_data, _lvl + 1);
+				if(saveFunc && saveFunc(subKV) === false) return;
+
+				_data = subKV._toString(_data, _lvl + 1, saveFunc) + "\n";
 			});
 			_write('}');
 		}
@@ -97,7 +148,6 @@
 		var _state = STATE_NORMAL;
 		var _len = text.length;
 		var _i, _c, _subKV, _breakFor = false;
-		var _keepSource;
 		var _startLoc;
 		var _endLoc;
 		var _comment = "";
@@ -106,7 +156,6 @@
 		var _value = null;
 
 		if(typeof startLoc === "boolean") {
-			_keepSource = startLoc;
 			_startLoc = undefined;
 		} else {
 			_startLoc = startLoc;
