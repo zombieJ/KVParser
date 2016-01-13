@@ -105,7 +105,7 @@
 		// Key - Value
 		if(typeof this.value === "string") {
 			_write('"' + this.key + '"	"'
-			+ this.value.replace(/\"/g, "\\\"").replace(/\'/g, "\\\'").replace(/\r\n/g, "\\n").replace(/\n/g, "\\n").replace(/\r/g, "\\n")
+			+ this.value.replace(/\\"/g, '"').replace(/"/g, '\\"').replace(/\r\n/g, "\\n").replace(/\n/g, "\\n").replace(/\r/g, "\\n")
 			+ '"');
 		} else if(this.value.length === 0) {
 			_write('"' + this.key + '"	{}');
@@ -247,11 +247,7 @@
 					_endLoc = _i;
 				} else if(_c === '\\') {
 					_i += 1;
-					if(KV.inArray(text[_i], ['n', 'r']) !== -1) {
-						_value += "\n";
-					} else {
-						_value += text[_i];
-					}
+					_value += '\\' + text[_i];
 				} else {
 					_value += _c;
 				}
